@@ -4,11 +4,13 @@
 
 - Define a `GscopeFind` command to perform cscope searching via `gtags-cscope`.
 - Connect gtags database of current project automatically and disconnect unrelated project databases before searching.
-- Reuse gtags-cscope connection if current project is unchanged.
+- Reuse gtags-cscope connection if current project is unchanged (gtags-cscope connection doesn't need a reset after updating).
 
 Gutentags can connect gtags databases automatically too, but it is trying to connect all the databases after updating. As a result, when you are querying symbol definitions or references, you will get results from not only current project but also other unrelated projects. 
 
 And your quickfix list will be totally messed up if you are working on more than two projects simultaneously. So, unrelated gtags databases must be disconnected to prevent query results from many projects at the same time.
+
+That's the right way to use gtags. Install gutentags_plus with gutentags, you will never worry about gtags database updating and connecting/disconnecting, just like using IDEs.
 
 
 # Installation
