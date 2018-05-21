@@ -1,6 +1,6 @@
 # What is it ?
 
-[Gutentags](https://github.com/ludovicchabant/vim-gutentags) is a vim 8 dedicated plugin which will update gtags database in background automatically on file change. It provides seemless gtags database updating and this plugin provides seemless databases switching:
+[Gutentags](https://github.com/ludovicchabant/vim-gutentags) is a vim 8 dedicated plugin which will update gtags database in background automatically on file change. Gutentags_plus works with gutentags and provides seemless databases switching:
 
 - Define a `GscopeFind` command to perform cscope searching via `gtags-cscope`.
 - Connect gtags database of current project automatically and disconnect unrelated project databases before searching.
