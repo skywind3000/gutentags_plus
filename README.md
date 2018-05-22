@@ -106,5 +106,5 @@ noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
 
 # Credits
 
-TODO.
+You may be interested the [vim-preview](https://github.com/skywind3000/vim-preview) plugin, it can preview results from quickfix window when you press `p`.
 
