@@ -1,6 +1,6 @@
 # What is it ?
 
-[Gutentags](https://github.com/ludovicchabant/vim-gutentags) is a vim 8 dedicated plugin which will update gtags database in background automatically on file change. Gutentags_plus works with gutentags and provides seemless databases switching:
+[Gutentags](https://github.com/ludovicchabant/vim-gutentags) is a vim 8 dedicated plugin which will update gtags database in background automatically on file change. **Gutentags_plus** works with gutentags and provides seemless databases switching:
 
 - Define a `GscopeFind` command to perform cscope searching via `gtags-cscope`.
 - Connect gtags database of current project automatically and disconnect unrelated project databases before searching.
@@ -10,7 +10,7 @@ Gutentags can connect gtags databases automatically too, but it is trying to con
 
 And your quickfix list will be totally messed up if you are working on more than two projects simultaneously. So, unrelated gtags databases must be disconnected to prevent query results from many projects at the same time.
 
-That's the right way to use gtags. Install gutentags_plus with gutentags, you will never worry about gtags database updating and connecting/disconnecting, just like using IDEs.
+That's the right way to use gtags. Install gutentags_plus with gutentags, you will never be worry about gtags database updating and connecting/disconnecting, you can search definitions and references whenever you want, database updating and switching are totally transparent to users, like using IDEs.
 
 
 # Installation
@@ -36,7 +36,7 @@ Plug 'skywind3000/gutentags_plus'
 " enable gtags module
 let g:gutentags_modules = ['ctags', 'gtags_cscope']
 
-" config project root markers
+" config project root markers.
 let g:gutentags_project_root = ['.root']
 
 " generate datebases in my cache directory, prevent gtags files polluting my project
