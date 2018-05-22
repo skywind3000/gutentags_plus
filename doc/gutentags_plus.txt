@@ -1,0 +1,140 @@
+*gutentags_plus.txt*  Seemless gtags database switching in vim
+
+===============================================================================
+Contents ~
+
+ 1. Introduction                                          |README-introduction|
+ 2. Installation                                          |README-installation|
+ 3. Configuration                                        |README-configuration|
+ 4. Command                                                    |README-command|
+ 5. Keymaps                                                    |README-keymaps|
+ 6. Credits                                                    |README-credits|
+ 7. References                                              |README-references|
+
+===============================================================================
+                                                          *README-introduction*
+Introduction ~
+
+Gutentags [1] is a vim 8 dedicated plugin which will update gtags database in
+background automatically on file change. *Gutentags_plus* works with gutentags
+and provides seemless databases switching:
+
+- Define a 'GscopeFind' command to perform cscope searching via 'gtags-
+  cscope'.
+
+- Connect gtags database of current project automatically and disconnect
+  unrelated project databases before searching.
+
+- Reuse gtags-cscope connection if current project is unchanged (gtags-cscope
+  connection doesn't need a reset after updating).
+
+Gutentags can connect gtags databases automatically too, but it is trying to
+connect all the databases after updating. As a result, when you are querying
+symbol definitions or references, you will get results from not only current
+project but also other unrelated projects.
+
+And your quickfix list will be totally messed up if you are working on more
+than two projects simultaneously. So, unrelated gtags databases must be
+disconnected to prevent query results from many projects at the same time.
+
+That's the right way to use gtags. Install gutentags_plus with gutentags, you
+will never be worry about gtags database updating and connecting/disconnecting,
+you can search definitions and references whenever you want, database updating
+and switching are totally transparent to users, like using IDEs.
+
+===============================================================================
+                                                          *README-installation*
+Installation ~
+
+vim-plug:
+>
+  Plug 'skywind3000/gutentags_plus'
+<
+vundle:
+>
+  Plugin 'skywind3000/gutentags_plus'
+<
+===============================================================================
+                                                         *README-configuration*
+Configuration ~
+>
+  Plug 'ludovicchabant/vim-gutentags'
+  Plug 'skywind3000/gutentags_plus'
+
+  " enable gtags module
+  let g:gutentags_modules = ['ctags', 'gtags_cscope']
+
+  " config project root markers.
+  let g:gutentags_project_root = ['.root']
+
+  " generate datebases in my cache directory, prevent gtags files polluting my p                                                                                                             roject
+  let g:gutentags_cache_dir = expand('~/.cache/tags')
+
+  " forbid gutentags adding gtags databases
+  let g:gutentags_auto_add_gtags_cscope = 0
+<
+===============================================================================
+                                                               *README-command*
+Command ~
+>
+  :GscopeFind {querytype} {name}
+<
+Perform a cscope search and take care of database switching before searching.
+
+'{querytype}' corresponds to the actual cscope line interface numbers as well
+as default nvi commands:
+>
+  0 or s: Find this symbol
+  1 or g: Find this definition
+  2 or d: Find functions called by this function
+  3 or c: Find functions calling this function
+  4 or t: Find this text string
+  6 or e: Find this egrep pattern
+  7 or f: Find this file
+  8 or i: Find files #including this file
+  9 or a: Find places where this symbol is assigned a value
+<
+===============================================================================
+                                                               *README-keymaps*
+Keymaps ~
+>
+  noremap <silent> <leader>cs :GscopeFind s <C-R><C-W><cr>
+  noremap <silent> <leader>cg :GscopeFind g <C-R><C-W><cr>
+  noremap <silent> <leader>cc :GscopeFind c <C-R><C-W><cr>
+  noremap <silent> <leader>ct :GscopeFind t <C-R><C-W><cr>
+  noremap <silent> <leader>ce :GscopeFind e <C-R><C-W><cr>
+  noremap <silent> <leader>cf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
+  noremap <silent> <leader>ci :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
+  noremap <silent> <leader>cd :GscopeFind d <C-R><C-W><cr>
+  noremap <silent> <leader>ca :GscopeFind a <C-R><C-W><cr>
+<
+You can disable the default keymaps by:
+>
+  let g:gutentags_plus_nomap = 1
+<
+and define your new maps like:
+>
+  noremap <silent> <leader>gs :GscopeFind s <C-R><C-W><cr>
+  noremap <silent> <leader>gg :GscopeFind g <C-R><C-W><cr>
+  noremap <silent> <leader>gc :GscopeFind c <C-R><C-W><cr>
+  noremap <silent> <leader>gt :GscopeFind t <C-R><C-W><cr>
+  noremap <silent> <leader>ge :GscopeFind e <C-R><C-W><cr>
+  noremap <silent> <leader>gf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
+  noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
+  noremap <silent> <leader>gd :GscopeFind d <C-R><C-W><cr>
+  noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
+<
+===============================================================================
+                                                               *README-credits*
+Credits ~
+
+TODO.
+
+===============================================================================
+                                                            *README-references*
+References ~
+
+[1] https://github.com/ludovicchabant/vim-gutentags
+
+vim: ft=help
+
