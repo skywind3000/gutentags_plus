@@ -3,23 +3,23 @@
 ===============================================================================
 Contents ~
 
- 1. Introduction                                          |README-introduction|
- 2. Installation                                          |README-installation|
- 3. Configuration                                        |README-configuration|
- 4. Command                                                    |README-command|
- 5. Keymaps                                                    |README-keymaps|
- 6. Credits                                                    |README-credits|
- 7. References                                              |README-references|
+ 1. Introduction                                   |gutentags_plus-introduction|
+ 2. Installation                                   |gutentags_plus-installation|
+ 3. Configuration                                 |gutentags_plus-configuration|
+ 4. Command                                             |gutentags_plus-command|
+ 5. Keymaps                                             |gutentags_plus-keymaps|
+ 6. Credits                                             |gutentags_plus-credits|
+ 7. References                                       |gutentags_plus-references|
 
 ===============================================================================
-                                                          *README-introduction*
+                                                   *gutentags_plus-introduction*
 Introduction ~
 
 Gutentags [1] is a vim 8 dedicated plugin which will update gtags database in
 background automatically on file change. *Gutentags_plus* works with gutentags
 and provides seemless databases switching:
 
-- Define a 'GscopeFind' command to perform cscope searching via 'gtags-
+- Define a *GscopeFind* command to perform cscope searching via 'gtags-
   cscope'.
 
 - Connect gtags database of current project automatically and disconnect
@@ -43,7 +43,7 @@ you can search definitions and references whenever you want, database updating
 and switching are totally transparent to users, like using IDEs.
 
 ===============================================================================
-                                                          *README-installation*
+                                                   *gutentags_plus-installation*
 Installation ~
 
 vim-plug:
@@ -55,7 +55,7 @@ vundle:
   Plugin 'skywind3000/gutentags_plus'
 <
 ===============================================================================
-                                                         *README-configuration*
+                                                  *gutentags_plus-configuration*
 Configuration ~
 >
   Plug 'ludovicchabant/vim-gutentags'
@@ -74,7 +74,7 @@ Configuration ~
   let g:gutentags_auto_add_gtags_cscope = 0
 <
 ===============================================================================
-                                                               *README-command*
+                                                        *gutentags_plus-command*
 Command ~
 >
   :GscopeFind {querytype} {name}
@@ -95,7 +95,7 @@ as default nvi commands:
   9 or a: Find places where this symbol is assigned a value
 <
 ===============================================================================
-                                                               *README-keymaps*
+                                                        *gutentags_plus-keymaps*
 Keymaps ~
 >
   noremap <silent> <leader>cs :GscopeFind s <C-R><C-W><cr>
@@ -125,13 +125,13 @@ and define your new maps like:
   noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
 <
 ===============================================================================
-                                                               *README-credits*
+                                                        *gutentags_plus-credits*
 Credits ~
 
 TODO.
 
 ===============================================================================
-                                                            *README-references*
+                                                     *gutentags_plus-references*
 References ~
 
 [1] https://github.com/ludovicchabant/vim-gutentags
