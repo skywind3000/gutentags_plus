@@ -27,6 +27,16 @@ vundle:
 Plugin 'skywind3000/gutentags_plus'
 ```
 
+
+# Demo
+
+**Gutentags_plus** works very well when searching definition/references in huge projects like linux kernel:
+
+![](doc/gutentags_plus.png)
+
+Searching is very fast, You can't browse linux kernel source in IDEs, but you can read it in vim easily with the help of this plugin. 
+
+
 # Configuration
 
 ```VimL
@@ -106,5 +116,5 @@ noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
 
 # Credits
 
-You may be interested the [vim-preview](https://github.com/skywind3000/vim-preview) plugin, it can preview results from quickfix window when you press `p`.
+You may be interested in the [vim-preview](https://github.com/skywind3000/vim-preview) plugin, it can preview results from quickfix window when you press `p`.
 
