@@ -27,16 +27,6 @@ vundle:
 Plugin 'skywind3000/gutentags_plus'
 ```
 
-
-# Demo
-
-**Gutentags_plus** works very well when searching definition/references in huge projects like linux kernel:
-
-![](doc/gutentags_plus.png)
-
-Searching is very fast, You can't browse linux kernel source in IDEs, but you can read it in vim easily with the help of this plugin. 
-
-
 # Configuration
 
 ```VimL
@@ -57,6 +47,16 @@ let g:gutentags_auto_add_gtags_cscope = 0
 ```
 
 NOTE: gutentags will identify current project root by by root markers (.git/.svn/.root). if your project is not in any git/svn repository, gutentags will not generate gtags database for it. To avoid this, you can create an empty `.root` file in your project root, and gutentags will know where is your project root and generate gtags database for it.
+
+
+# Demo
+
+**Gutentags_plus** works very well when searching definition/references in huge projects like linux kernel:
+
+![](doc/gutentags_plus.png)
+
+Searching is very fast, You can't browse linux kernel source in IDEs, but you can read it in vim easily with the help of this plugin. 
+
 
 # Command
 
