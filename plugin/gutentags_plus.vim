@@ -185,8 +185,8 @@ function! s:quickfix_open(size)
 	exec 'botright copen '. ((a:size > 0)? a:size : '')
 	noautocmd windo call s:WindowCheck(1)
 	noautocmd silent! exec ''.l:winnr.'wincmd w'
-    
-    call win_gotoid(win_getid(winnr("$")))
+
+	call win_gotoid(win_getid(winnr("$")))
 endfunc
 
 
