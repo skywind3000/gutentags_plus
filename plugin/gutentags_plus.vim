@@ -178,13 +178,11 @@ function! s:quickfix_open(size)
 	let s:quickfix_open = 0
 	let l:winnr = winnr()			
 	noautocmd windo call s:WindowCheck(0)
-	noautocmd silent! exec ''.l:winnr.'wincmd w'
 	if s:quickfix_open != 0
 		return
 	endif
 	exec 'botright copen '. ((a:size > 0)? a:size : '')
 	noautocmd windo call s:WindowCheck(1)
-	noautocmd silent! exec ''.l:winnr.'wincmd w'
 endfunc
 
 
