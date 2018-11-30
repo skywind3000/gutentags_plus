@@ -42,8 +42,8 @@ let g:gutentags_project_root = ['.root']
 " generate datebases in my cache directory, prevent gtags files polluting my project
 let g:gutentags_cache_dir = expand('~/.cache/tags')
 
-" forbid gutentags adding gtags databases
-let g:gutentags_auto_add_gtags_cscope = 0
+" change focus to quickfix window after search
+let g:gutentags_plus_switch = 1
 ```
 
 NOTE: gutentags will identify current project root by by root markers (.git/.svn/.root). if your project is not in any git/svn repository, gutentags will not generate gtags database for it. To avoid this, you can create an empty `.root` file in your project root, and gutentags will know where is your project root and generate gtags database for it.
