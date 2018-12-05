@@ -127,7 +127,7 @@ step2: restart vim and execute command:
 
     :GutentagsToggleTrace
 
-step3: generate gtags again with current project:
+step3: open some files and generate gtags again with current project:
 
     :GutentagsUpdate
 
@@ -135,7 +135,7 @@ step4: you may see a lot of gutentags logs, after that:
 
     :messages
 
-To see the gtags logs.
+To see the gtags log.
 
 
 # Credits
