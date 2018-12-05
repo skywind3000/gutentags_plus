@@ -37,9 +37,6 @@ Plug 'skywind3000/gutentags_plus'
 " enable gtags module
 let g:gutentags_modules = ['ctags', 'gtags_cscope']
 
-" disable gutentags auto adding gtags-cscope database (required).
-let g:gutentags_auto_add_gtags_cscope = 0
-
 " config project root markers.
 let g:gutentags_project_root = ['.root']
 
