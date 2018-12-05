@@ -37,13 +37,16 @@ Plug 'skywind3000/gutentags_plus'
 " enable gtags module
 let g:gutentags_modules = ['ctags', 'gtags_cscope']
 
+" disable gutentags auto adding gtags-cscope database (required).
+let g:gutentags_auto_add_gtags_cscope = 0
+
 " config project root markers.
 let g:gutentags_project_root = ['.root']
 
 " generate datebases in my cache directory, prevent gtags files polluting my project
 let g:gutentags_cache_dir = expand('~/.cache/tags')
 
-" change focus to quickfix window after search
+" change focus to quickfix window after search (optional).
 let g:gutentags_plus_switch = 1
 ```
 
@@ -114,6 +117,29 @@ noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
 noremap <silent> <leader>gd :GscopeFind d <C-R><C-W><cr>
 noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
 ```
+
+# Troubleshooting
+
+### ERROR: gutentags: gtags-cscope job failed, returned: 1
+
+step1: add the line below to your `.vimrc`:
+
+    let g:gutentags_define_advanced_commands = 1
+
+step2: restart vim and execute command:
+
+    :GutentagsToggleTrace
+
+step3: generate gtags again with current project:
+
+    :GutentagsUpdate
+
+step4: you may see a lot of gutentags logs, after that:
+
+    :messages
+
+To see the gtags logs.
+
 
 # Credits
 
