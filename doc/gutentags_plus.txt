@@ -72,7 +72,12 @@ Configuration ~
 
   " forbid gutentags adding gtags databases
   let g:gutentags_auto_add_gtags_cscope = 0
-<
+
+  " change focus to quickfix window after search (optional).
+  let g:gutentags_plus_switch = 1
+
+  " close quickfix window after press <CR> (optional).
+  let g:gutentags_plus_auto_close_list = 1
 ===============================================================================
                                                         *gutentags_plus-command*
 Command ~

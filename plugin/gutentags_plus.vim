@@ -189,6 +189,9 @@ function! s:quickfix_open(size)
 		if get(g:, 'gutentags_plus_switch', 0) != 0
 			noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
 		endif
+		if get(g:, 'gutentags_plus_auto_close_list', 0) != 0
+            nnoremap <silent> <buffer> <CR> <CR>:cclose<CR>
+        endif
 		return
 	endif
 	exec 'botright copen '. ((a:size > 0)? a:size : '')
@@ -197,6 +200,9 @@ function! s:quickfix_open(size)
 	if get(g:, 'gutentags_plus_switch', 0) != 0
 		noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
 	endif
+    if get(g:, 'gutentags_plus_auto_close_list', 0) != 0
+        nnoremap <silent> <buffer> <CR> <CR>:cclose<CR>
+    endif
 endfunc
 
 
