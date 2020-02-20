@@ -94,6 +94,7 @@ Perform a cscope search and take care of database switching before searching.
 | `<leader>cf` | Find file name under cursor |
 | `<leader>ci` | Find files #including the file name under cursor |
 | `<leader>ca` | Find places where current symbol is assigned |
+| `<leader>cz` | Find current word in ctags database |
 
 You can disable the default keymaps by:
 
@@ -113,6 +114,7 @@ noremap <silent> <leader>gf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
 noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
 noremap <silent> <leader>gd :GscopeFind d <C-R><C-W><cr>
 noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
+noremap <silent> <leader>gz :GscopeFind z <C-R><C-W><cr>
 ```
 
 # Troubleshooting
