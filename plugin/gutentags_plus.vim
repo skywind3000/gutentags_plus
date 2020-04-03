@@ -694,7 +694,7 @@ function s:JumpToTag(tagname)
     else
         let path = s:script_dir . '/../../fzf.vim/bin/preview.sh'
 	if filereadable(path)
-	  let preview = 'cmd={3..}; cmd=\${cmd:1:-1}; lineno=\$(rg -n "\$cmd" {2} | cut -d: -f1); '. path . '  {2}:\$lineno'
+	  let preview = 'cmd={3..}; cmd=\${cmd:2:-2}; cmd=\$(echo "\$cmd" | sed -e ''s/[^a-zA-Z0-9 ,_=:]/\\\\&/g''); lineno=\$(rg -n "\$cmd" {2} | cut -d: -f1); '. path . '  {2}:\$lineno'
 	  call fzf#run({
 	  \   'source': tags_as_string,
 	  \   'sink':   function('s:fzf_sink', [a:tagname]),
