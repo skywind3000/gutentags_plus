@@ -250,7 +250,9 @@ function! s:GscopeFind(bang, what, ...)
 	endif
 	let text = "[cscope ".a:what.": ".text."]"
 	let title = "GscopeFind ".a:what.' "'.keyword.'"'
-	silent exec 'cexpr text'
+	if get(g:, 'gutentags_plus_title', 0)
+		silent exec 'cexpr text'
+	endif
 	if has('nvim') == 0 && (v:version >= 800 || has('patch-7.4.2210'))
 		call setqflist([], 'a', {'title':title})
 	elseif has('nvim') && has('nvim-0.2.2')
@@ -592,7 +594,9 @@ function! s:FindTags(bang, tagname, ...)
 	let text = 'ctags "'.keyword.'"'
 	let text = "[cscope z: ".text."]"
 	let title = "GscopeFind z \"" .keyword.'"'
-	silent exec 'cexpr text'
+	if get(g:, 'gutentags_plus_title', 0)
+		silent exec 'cexpr text'
+	endif
 	if has('nvim') == 0 && (v:version >= 800 || has('patch-7.4.2210'))
 		call setqflist([], 'a', {'title':title})
 	elseif has('nvim') && has('nvim-0.2.2')
