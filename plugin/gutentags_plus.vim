@@ -44,10 +44,10 @@ function! s:get_gtags_file() abort
 	if !exists('b:gutentags_files')
 		return ''
 	endif
-	if !has_key(b:gutentags_files, 'gtags_cscope')
+	if !has_key(b:gutentags_files, &cscopeprg)
 		return ''
 	endif
-	let tags = b:gutentags_files['gtags_cscope']
+	let tags = b:gutentags_files[&cscopeprg]
 	if filereadable(tags)
 		return tags
 	endif
@@ -148,8 +148,6 @@ function! s:GscopeAdd() abort
 	let value = &cscopeverbose
 	let $GTAGSDBPATH = fnamemodify(dbname, ':p:h')
 	let $GTAGSROOT = root
-	let prg = get(g:, 'gutentags_gtags_cscope_executable', 'gtags-cscope')
-	execute 'set cscopeprg=' . fnameescape(prg)
 	set nocscopeverbose
 	silent exec 'cs kill -1'
 	exec 'cs add '. fnameescape(dbname)
@@ -204,14 +202,14 @@ endfunc
 " Find search
 "----------------------------------------------------------------------
 function! s:GscopeFind(bang, what, ...)
-	let keyword = (a:0 > 0)? a:1 : ''
+	let keyword = (a:0 > 0)? a:1 : a:what =~# 'f\|i\|7\|8' ? expand('<cfile>') : expand('<cword>')
 	let dbname = s:get_gtags_file()
 	let root = get(b:, 'gutentags_root', '')
 	if dbname == '' || root == ''
 		call s:ErrorMsg("no gtags database for this project, check gutentags's documents")
 		return 0
 	endif
-	if a:0 == 0 || keyword == ''
+	if keyword == ''
 		redraw! | echo '' | redraw!
 		echohl ErrorMsg
 		echom 'E560: Usage: GscopeFind a|c|d|e|f|g|i|s|t|z name'
@@ -252,7 +250,9 @@ function! s:GscopeFind(bang, what, ...)
 	endif
 	let text = "[cscope ".a:what.": ".text."]"
 	let title = "GscopeFind ".a:what.' "'.keyword.'"'
-	silent exec 'cexpr text'
+	if get(g:, 'gutentags_plus_title', 0)
+		silent exec 'cexpr text'
+	endif
 	if has('nvim') == 0 && (v:version >= 800 || has('patch-7.4.2210'))
 		call setqflist([], 'a', {'title':title})
 	elseif has('nvim') && has('nvim-0.2.2')
@@ -633,7 +633,9 @@ function! s:FindTags(bang, tagname, ...)
 	let text = 'ctags "'.keyword.'"'
 	let text = "[cscope z: ".text."]"
 	let title = "GscopeFind z \"" .keyword.'"'
-	silent exec 'cexpr text'
+	if get(g:, 'gutentags_plus_title', 0)
+		silent exec 'cexpr text'
+	endif
 	if has('nvim') == 0 && (v:version >= 800 || has('patch-7.4.2210'))
 		call setqflist([], 'a', {'title':title})
 	elseif has('nvim') && has('nvim-0.2.2')
