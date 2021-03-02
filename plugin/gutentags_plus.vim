@@ -3,7 +3,7 @@
 " gutentags_plus.vim - connecting gtags_cscope db on demand
 "
 " Created by skywind on 2018/04/25
-" Last Modified: 2018/05/22 15:54
+" Last Modified: 2021/03/02 23:30
 "
 "======================================================================
 
@@ -207,7 +207,7 @@ function! s:GscopeFind(bang, what, ...)
 	let keyword = (a:0 > 0)? a:1 : ''
 	let dbname = s:get_gtags_file()
 	let root = get(b:, 'gutentags_root', '')
-	if dbname == '' || root == ''
+	if (dbname == '' || root == '') && a:what != 'z'
 		call s:ErrorMsg("no gtags database for this project, check gutentags's documents")
 		return 0
 	endif
@@ -252,6 +252,10 @@ function! s:GscopeFind(bang, what, ...)
 	endif
 	let text = "[cscope ".a:what.": ".text."]"
 	let title = "GscopeFind ".a:what.' "'.keyword.'"'
+	let save_local = &l:efm
+	let save_global = &g:efm
+	let &g:efm = '%f:%l:%m'
+	let &l:efm = '%f:%l:%m'
 	silent exec 'cexpr text'
 	if has('nvim') == 0 && (v:version >= 800 || has('patch-7.4.2210'))
 		call setqflist([], 'a', {'title':title})
@@ -286,6 +290,8 @@ function! s:GscopeFind(bang, what, ...)
 		echohl NONE
 		let success = 0
 	endtry
+	let &g:efm = save_global
+	let &l:efm = save_local
 	if winbufnr('%') == nbuf
 		call cursor(nrow, ncol)
 	endif
@@ -633,7 +639,11 @@ function! s:FindTags(bang, tagname, ...)
 	let text = 'ctags "'.keyword.'"'
 	let text = "[cscope z: ".text."]"
 	let title = "GscopeFind z \"" .keyword.'"'
-	silent exec 'cexpr text'
+	let save_local = &l:efm
+	let save_global = &g:efm
+	let &g:efm = '%f:%l:%m'
+	let &l:efm = '%f:%l:%m'
+	silent! exec 'cexpr text'
 	if has('nvim') == 0 && (v:version >= 800 || has('patch-7.4.2210'))
 		call setqflist([], 'a', {'title':title})
 	elseif has('nvim') && has('nvim-0.2.2')
@@ -643,16 +653,12 @@ function! s:FindTags(bang, tagname, ...)
 	else
 		call setqflist([], 'a')
 	endif
-	let save_local = &l:efm
-	let save_global = &g:efm
 	for item in signatures
 		let t = item.filename . ':'. item.line . ': ' . item.func_prototype
 		noautocmd silent caddexpr t
 	endfor
 	let &g:efm = save_global
 	let &l:efm = save_local
-	let &g:efm = '%f:%l:%m'
-	let &l:efm = '%f:%l:%m'
 	if winbufnr('%') == nbuf
 		call cursor(nrow, ncol)
 	endif
@@ -702,3 +708,5 @@ if get(g:, 'gutentags_plus_nomap', 0) == 0
 	nmap <silent> <leader>cz <Plug>GscopeFindCtag
 	nmap <silent> <leader>ck :GscopeKill<cr>
 endif
+
+
