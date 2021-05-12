@@ -11,10 +11,12 @@
 
 let s:windows = has('win32') || has('win64') || has('win16') || has('win95')
 
-if v:version >= 800
-	set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+,a+
-else
-	set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+
+if len(&cscopequickfix) == 0 
+  if v:version >= 800
+	  set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+,a+
+  else
+	  set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+
+  endif
 endif
 
 let g:gutentags_auto_add_gtags_cscope = 0
@@ -671,7 +673,86 @@ function! s:FindTags(bang, tagname, ...)
 	return 1
 endfunc
 
+function! TagFind(tagname)
+	return s:signature(a:tagname, 0, &ft)
+endfunc
+"----------------------------------------------------------------------
+" jump to tag
+"----------------------------------------------------------------------
+let s:script_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+function s:JumpToTag(tagname)
+    let tags = map(s:signature(a:tagname, 0, &ft), function('s:colorize_tag'))
+    let tags_as_string = map(tags, 'join(v:val, " ")')
 
+    if len(tags_as_string) == 0
+	echohl WarningMsg
+	echo 'Tag not found: ' . a:tagname
+	echohl None
+    elseif len(tags_as_string) == 1
+	if &cscopetag
+	  execute "GscopeAdd"
+	  let old_cscopequickfix = &cscopequickfix
+	  set cscopequickfix=g-
+	  execute 'cstag!' a:tagname
+	  "cclose
+	  let &cscopequickfix=old_cscopequickfix
+	else
+	  execute 'tag' a:tagname 
+	endif
+    else
+        let path = s:script_dir . '/../../fzf.vim/bin/preview.sh'
+	if filereadable(path)
+	  let preview = 'cmd={3..}; cmd=\${cmd:2:-2}; cmd=\$(echo "\$cmd" | sed -e ''s/[^a-zA-Z0-9 ,_=:]/\\\\&/g''); lineno=\$(rg -n "\$cmd" {2} | cut -d: -f1); '. path . '  {2}:\$lineno'
+	  call fzf#run({
+	  \   'source': tags_as_string,
+	  \   'sink':   function('s:fzf_sink', [a:tagname]),
+	  \   'options': '--ansi --tiebreak index --preview-window up:60%  --preview "' . preview . '" --prompt " 🔎 \"' . a:tagname . '\"> "',
+	  \ })
+	else
+	  " TODO: fill the quickfix window with tags
+	endif
+    endif
+endfunc
+
+function! s:fzf_sink(identifier, selection)
+  let l:count = split(a:selection)[0]
+  if &cscopetag
+    execute "GscopeAdd"
+    let old_cscopequickfix=&cscopequickfix
+    set cscopequickfix=g-
+    execute 'cstag!' a:identifier
+    execute 'cc' l:count
+    let &cscopequickfix=old_cscopequickfix
+  else
+    execute l:count . 'tag' a:identifier 
+  endif
+endfunction
+
+function! s:colorize_tag(index, tag_dict)
+  let components = [a:index + 1]
+  if has_key(a:tag_dict, 'filename')
+    call add(components, s:magenta(fnamemodify(a:tag_dict['filename'], ":~:.")))
+  endif
+  if has_key(a:tag_dict, 'class')
+    call add(components, s:green(a:tag_dict['class']))
+  endif
+  if has_key(a:tag_dict, 'cmd')
+    call add(components, s:red(a:tag_dict['cmd']))
+  endif
+  return components
+endfunction
+
+function! s:green(s)
+  return "\033[32m" . a:s . "\033[m"
+endfunction
+
+function! s:magenta(s)
+  return "\033[35m" . a:s . "\033[m"
+endfunction
+
+function! s:red(s)
+  return "\033[31m" . a:s . "\033[m"
+endfunction
 "----------------------------------------------------------------------
 " setup keymaps
 "----------------------------------------------------------------------
@@ -696,6 +777,7 @@ nnoremap <silent> <expr> <Plug>GscopeFindFile       <SID>FindCwordCmd('GscopeFin
 nnoremap <silent> <expr> <Plug>GscopeFindInclude    <SID>FindCwordCmd('GscopeFind i', 1)
 nnoremap <silent> <expr> <Plug>GscopeFindAssign     <SID>FindCwordCmd('GscopeFind a', 0)
 nnoremap <silent> <expr> <Plug>GscopeFindCtag       <SID>FindCwordCmd('GscopeFind z', 0)
+nnoremap <silent> <Plug>GscopeJumpToTag      :call <SID>JumpToTag(expand('<cword>'))<cr>
 
 if get(g:, 'gutentags_plus_nomap', 0) == 0
 	nmap <silent> <leader>cs <Plug>GscopeFindSymbol
@@ -709,6 +791,7 @@ if get(g:, 'gutentags_plus_nomap', 0) == 0
 	nmap <silent> <leader>ca <Plug>GscopeFindAssign
 	nmap <silent> <leader>cz <Plug>GscopeFindCtag
 	nmap <silent> <leader>ck :GscopeKill<cr>
+	nmap <silent> <C-]> <Plug>GscopeJumpToTag
 endif
 
 
