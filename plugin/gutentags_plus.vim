@@ -199,6 +199,14 @@ function! s:quickfix_open(size)
 	if get(g:, 'gutentags_plus_switch', 0) != 0
 		noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
 	endif
+	" quickfix mappings, refer to ag.vim
+	nnoremap <silent> <buffer> h  <C-W><CR><C-w>K
+	nnoremap <silent> <buffer> H  <C-W><CR><C-w>K<C-w>b
+	nnoremap <silent> <buffer> t  <C-w><CR><C-w>T
+	nnoremap <silent> <buffer> T  <C-w><CR><C-w>TgT<C-W><C-W>
+	nnoremap <silent> <buffer> v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
+	exe 'nnoremap <silent> <buffer> go <CR>:copen<CR>'
+	exe 'nnoremap <silent> <buffer> q  :cclose<CR>'
 endfunc
 
 
@@ -297,7 +305,7 @@ function! s:GscopeFind(bang, what, ...)
 	if winbufnr('%') == nbuf
 		call cursor(nrow, ncol)
 	endif
-	if success != 0 && a:bang == 0
+    if success != 0 && a:bang == 0 && getqflist({'size':0})['size'] > 1
 		let height = get(g:, 'gutentags_plus_height', 6)
 		call s:quickfix_open(height)
 	endif
