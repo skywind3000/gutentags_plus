@@ -206,7 +206,7 @@ function! s:quickfix_open(size)
 	nnoremap <silent> <buffer> T  <C-w><CR><C-w>TgT<C-W><C-W>
 	nnoremap <silent> <buffer> v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
 	exe 'nnoremap <silent> <buffer> go <CR>:copen<CR>'
-	exe 'nnoremap <silent> <buffer> q  :cclose<CR>'
+	exe 'nnoremap <silent> <buffer> q  :cclose<CR>:winc p<CR>'
 endfunc
 
 
