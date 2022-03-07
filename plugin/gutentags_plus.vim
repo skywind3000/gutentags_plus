@@ -18,7 +18,7 @@ else
 endif
 
 let g:gutentags_auto_add_gtags_cscope = 0
-let g:gutentags_quickfix_follow = 1
+let g:gutentags_plus_follow = 0
 
 "----------------------------------------------------------------------
 " strip heading and ending spaces 
