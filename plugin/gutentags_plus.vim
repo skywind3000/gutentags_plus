@@ -19,9 +19,8 @@ endif
 
 let g:gutentags_auto_add_gtags_cscope = 0
 
-
 "----------------------------------------------------------------------
-" strip heading and ending spaces 
+" strip heading and ending spaces
 "----------------------------------------------------------------------
 function! s:string_strip(text)
 	return substitute(a:text, '^\s*\(.\{-}\)\s*$', '\1', '')
@@ -184,16 +183,24 @@ function! s:quickfix_open(size)
 		endif
 	endfunc
 	let s:quickfix_open = 0
-	let l:winnr = winnr()			
+	let l:winnr = winnr()
 	noautocmd windo call s:WindowCheck(0)
 	noautocmd silent! exec ''.l:winnr.'wincmd w'
 	if s:quickfix_open != 0
-		if get(g:, 'gutentags_plus_switch', 0) != 0
-			noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
-		endif
-		return
+        if get(g:, 'gutentags_plus_follow', 0) != 0
+            exec 'cclose'
+        else
+            if get(g:, 'gutentags_plus_switch', 0) != 0
+                noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
+            endif
+            return
+        endif
 	endif
-	exec 'botright copen '. ((a:size > 0)? a:size : '')
+    if get(g:, 'gutentags_plus_follow', 0) != 0
+        exec 'rightbelow copen '. ((a:size > 0)? a:size : '')
+    else
+        exec 'botright copen '. ((a:size > 0)? a:size : '')
+    endif
 	noautocmd windo call s:WindowCheck(1)
 	noautocmd silent! exec ''.l:winnr.'wincmd w'
 	if get(g:, 'gutentags_plus_switch', 0) != 0
@@ -470,7 +477,7 @@ function! s:signature(funname, fn_only, filetype)
 				continue
 			elseif ft == 'cs' && ename != 'cs'
 				continue
-			elseif ft == 'php' 
+			elseif ft == 'php'
 				if index(['php', 'php4', 'php5', 'php6'], ename) < 0
 					continue
 				endif
