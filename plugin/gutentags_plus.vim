@@ -18,7 +18,7 @@ else
 endif
 
 let g:gutentags_auto_add_gtags_cscope = 0
-
+let g:gutentags_quickfix_follow = 1
 
 "----------------------------------------------------------------------
 " strip heading and ending spaces 
@@ -188,12 +188,20 @@ function! s:quickfix_open(size)
 	noautocmd windo call s:WindowCheck(0)
 	noautocmd silent! exec ''.l:winnr.'wincmd w'
 	if s:quickfix_open != 0
-		if get(g:, 'gutentags_plus_switch', 0) != 0
-			noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
-		endif
-		return
+        if get(g:, 'gutentags_quickfix_follow', 0) != 0
+            exec 'cclose'
+        else
+            if get(g:, 'gutentags_plus_switch', 0) != 0
+                noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
+            endif
+            return
+        endif
 	endif
-	exec 'botright copen '. ((a:size > 0)? a:size : '')
+    if get(g:, 'gutentags_quickfix_follow', 0) != 0
+        exec 'rightbelow copen '. ((a:size > 0)? a:size : '')
+    else
+        exec 'botright copen '. ((a:size > 0)? a:size : '')
+    endif
 	noautocmd windo call s:WindowCheck(1)
 	noautocmd silent! exec ''.l:winnr.'wincmd w'
 	if get(g:, 'gutentags_plus_switch', 0) != 0
