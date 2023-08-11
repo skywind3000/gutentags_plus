@@ -251,7 +251,7 @@ function! s:GtagsCscope(exename, root, database, pattern, word, override)
 		let ft = strpart(text, p3 + 1)
 		let nn = a:root . '/' . fn
 		if win != 0
-			let nn = tr(nn, "/", '\')
+			let nn = tr(nn, '\', '/')
 		endif
 		let tt = printf('%s(%d): <<%s>> %s', nn, fl, fw, ft)
 		call add(output, tt)
