@@ -3,19 +3,26 @@
 " gutentags_plus.vim - connecting gtags_cscope db on demand
 "
 " Created by skywind on 2018/04/25
-" Last Modified: 2021/03/02 23:30
+" Last Modified: 2023/08/11 15:11
 "
 "======================================================================
 
 " vim: set ts=4 sw=4 tw=78 noet :
 
 let s:windows = has('win32') || has('win64') || has('win16') || has('win95')
+let s:cscope_native = get(g:, 'gutentags_plus_native', 1)
 
 if v:version >= 800
-	set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+,a+
+	if has('nvim-0.9.0') == 0
+		set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+,a+
+	else
+		let s:cscope_native = 0
+	endif
 else
 	set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+
 endif
+
+" let s:cscope_native = 0
 
 let g:gutentags_auto_add_gtags_cscope = 0
 
@@ -165,6 +172,133 @@ command! -nargs=0 GscopeAdd call s:GscopeAdd()
 
 
 "----------------------------------------------------------------------
+" run cscope
+"----------------------------------------------------------------------
+function! s:GtagsCscope(exename, root, database, pattern, word, override)
+	if !executable(a:exename)
+		return ''
+	endif
+	let $GTAGSROOT = a:root
+	let $GTAGSDBPATH = a:database
+	let dbname = a:database . '\GTAGS'
+	if !isdirectory(a:root)
+		redrawstatus
+		echohl ErrorMsg
+		echo "gtags-cscope error: bad project root: " . a:root
+		echohl None
+		return -1
+	endif
+	if has('win32') || has('win64') || has('win95') || has('win16')
+		let cmd = 'cd /d ' . shellescape(a:root) . ' && ' . a:exename
+		let win = 1
+	else
+		let cmd = 'cd ' . shellescape(a:root) . ' && ' . a:exename
+		let win = 0
+	endif
+	let num = 0
+	if a:pattern == '0' || a:pattern == 's'
+		let num = 0
+	elseif a:pattern == '1' || a:pattern == 'g'
+		let num = 1
+	elseif a:pattern == '2' || a:pattern == 'd'
+		let num = 2
+	elseif a:pattern == '3' || a:pattern == 'c'
+		let num = 3
+	elseif a:pattern == '4' || a:pattern == 't'
+		let num = 4
+	elseif a:pattern == '6' || a:pattern == 'e'
+		let num = 6
+	elseif a:pattern == '7' || a:pattern == 'f'
+		let num = 7
+	elseif a:pattern == '8' || a:pattern == 'i'
+		let num = 8
+	elseif a:pattern == '9' || a:pattern == 'a'
+		let num = 9
+	endif
+	let cmd = cmd . ' -d '
+	let cmd = cmd . ' -F ' . shellescape(dbname)
+	let cmd = cmd . ' -L -' . num . ' ' . shellescape(a:word)
+	let content = system(cmd)
+	if v:shell_error != 0
+		redraw
+		let hr = substitute(content, '[\n\r]', ' ', 'g')
+		echohl ErrorMsg
+		echo "gtags-cscope error: " . hr
+		echohl None
+		return -2
+	endif
+	let output = []
+	for text in split(content, "\n")
+		let text = substitute(text, '^\s*\(.\{-}\)\s*$', '\1', '')
+		if text == ''
+			continue
+		endif
+		let p1 = stridx(text, ' ')
+		if p1 < 0
+			continue
+		endif
+		let fn = strpart(text, 0, p1)
+		let p2 = stridx(text, ' ', p1 + 1)
+		if p2 < 0
+			continue
+		endif
+		let fw = strpart(text, p1 + 1, p2 - p1 - 1)
+		let p3 = stridx(text, ' ', p2 + 1)
+		if p3 < 0
+			continue
+		endif
+		let fl = strpart(text, p2 + 1, p3 - p2 - 1)
+		let ft = strpart(text, p3 + 1)
+		let nn = a:root . '/' . fn
+		if win != 0
+			let nn = tr(nn, "/", '\')
+		endif
+		let tt = printf('%s(%d): <<%s>> %s', nn, fl, fw, ft)
+		call add(output, tt)
+	endfor
+	if len(output) == 0
+		redraw
+		echohl ErrorMsg
+		echo "E259: not find '". a:word ."'"
+		echohl None
+		return 0
+	endif
+	let text = join(output, "\n")
+	let efm1 = &l:errorformat
+	let efm2 = &g:errorformat
+	let &l:efm = '%f(%l):%m'
+	let &g:efm = '%f(%l):%m'
+	try
+		if !a:override
+			caddexpr text
+		else
+			cexpr text
+		endif
+	catch
+	endtry
+	let &l:errorformat = efm1
+	let &g:errorformat = efm2
+	return len(output)
+endfunc
+
+
+"----------------------------------------------------------------------
+" wrapper for cscope
+"----------------------------------------------------------------------
+function! s:gtags_cscope(pattern, word)
+	let dbname = s:get_gtags_file()
+	let root = get(b:, 'gutentags_root', '')
+	if dbname == '' || root == ''
+		call s:ErrorMsg("no gtags database for this project, check gutentags's documents")
+		return 0
+	endif
+	let dbpath = fnamemodify(dbname, ':p:h')
+	let prg = get(g:, 'gutentags_gtags_cscope_executable', 'gtags-cscope')
+	return s:GtagsCscope(prg, root, dbpath, a:pattern, a:word, 0)
+endfunc
+
+
+"----------------------------------------------------------------------
 " open quickfix
 "----------------------------------------------------------------------
 function! s:quickfix_open(size)
@@ -228,7 +362,9 @@ function! s:GscopeFind(bang, what, ...)
 		call s:ErrorMsg('gtags database is not ready yet')
 		return 0
 	endif
-	call s:GscopeAdd()
+	if s:cscope_native
+		call s:GscopeAdd()
+	endif
 	let ncol = col('.')
 	let nrow = line('.')
 	let nbuf = winbufnr('%')
@@ -270,25 +406,33 @@ function! s:GscopeFind(bang, what, ...)
 	endif
 	" call setqflist([{'text':text}], 'a')
 	let success = 1
+	
 	try
-		exec 'cs find '.a:what.' '.fnameescape(keyword)
-		redrawstatus
+		if s:cscope_native
+			exec 'cs find '.a:what.' '.fnameescape(keyword)
+		else
+			let hr = s:gtags_cscope(a:what, keyword)
+			if hr <= 0
+				let success = 0
+			endif
+		endif
+		redraw
 	catch /^Vim\%((\a\+)\)\=:E259/
-		redrawstatus
+		redraw
 		echohl ErrorMsg
 		echo "E259: not find '".keyword."'"
 		echohl NONE
 		let success = 0
 	catch /^Vim\%((\a\+)\)\=:E567/
-		redrawstatus
+		redraw
 		echohl ErrorMsg
 		echo "E567: no cscope connections"
 		echohl NONE
 		let success = 0
 	catch /^Vim\%((\a\+)\)\=:E/
-		redrawstatus
+		redraw
 		echohl ErrorMsg
-		echo "ERROR: cscope error"
+		echo "ERROR: cscope error: " . v:exception
 		echohl NONE
 		let success = 0
 	endtry
@@ -355,7 +499,9 @@ endfunc
 function! s:taglist(pattern)
 	let ftags = []
 	try
-		if &cscopetag
+		if !has('cscope')
+			let ftags = taglist(a:pattern)
+		elseif &cscopetag
 			let ftags = s:global_taglist(a:pattern)
 		else
 			let ftags = taglist(a:pattern)
@@ -364,7 +510,9 @@ function! s:taglist(pattern)
 		" if error occured, reset tagbsearch option and try again.
 		let bak = &tagbsearch
 		set notagbsearch
-		if &cscopetag
+		if !has('cscope')
+			let ftags = taglist(a:pattern)
+		elseif &cscopetag
 			let ftags = s:global_taglist(a:pattern)
 		else
 			let ftags = taglist(a:pattern)
