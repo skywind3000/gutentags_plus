@@ -39,7 +39,6 @@ endfunc
 " display error message
 "----------------------------------------------------------------------
 function! s:ErrorMsg(msg)
-	redraw! | echo "" | redraw!
 	echohl ErrorMsg
 	echom 'ERROR: '. a:msg
 	echohl NONE
