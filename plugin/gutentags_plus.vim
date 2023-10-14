@@ -301,36 +301,40 @@ endfunc
 " open quickfix
 "----------------------------------------------------------------------
 function! s:quickfix_open(size)
-	function! s:WindowCheck(mode)
-		if &buftype == 'quickfix'
-			let s:quickfix_open = 1
-			let s:quickfix_wid = winnr()
+	if exists(":Denite") == 2
+		exec "Denite quickfix"
+	else
+		function! s:WindowCheck(mode)
+			if &buftype == 'quickfix'
+				let s:quickfix_open = 1
+				let s:quickfix_wid = winnr()
+				return
+			endif
+			if a:mode == 0
+				let w:quickfix_save = winsaveview()
+			else
+				if exists('w:quickfix_save')
+					call winrestview(w:quickfix_save)
+					unlet w:quickfix_save
+				endif
+			endif
+		endfunc
+		let s:quickfix_open = 0
+		let l:winnr = winnr()			
+		noautocmd windo call s:WindowCheck(0)
+		noautocmd silent! exec ''.l:winnr.'wincmd w'
+		if s:quickfix_open != 0
+			if get(g:, 'gutentags_plus_switch', 0) != 0
+				noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
+			endif
 			return
 		endif
-		if a:mode == 0
-			let w:quickfix_save = winsaveview()
-		else
-			if exists('w:quickfix_save')
-				call winrestview(w:quickfix_save)
-				unlet w:quickfix_save
-			endif
-		endif
-	endfunc
-	let s:quickfix_open = 0
-	let l:winnr = winnr()			
-	noautocmd windo call s:WindowCheck(0)
-	noautocmd silent! exec ''.l:winnr.'wincmd w'
-	if s:quickfix_open != 0
+		exec 'botright copen '. ((a:size > 0)? a:size : '')
+		noautocmd windo call s:WindowCheck(1)
+		noautocmd silent! exec ''.l:winnr.'wincmd w'
 		if get(g:, 'gutentags_plus_switch', 0) != 0
 			noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
 		endif
-		return
-	endif
-	exec 'botright copen '. ((a:size > 0)? a:size : '')
-	noautocmd windo call s:WindowCheck(1)
-	noautocmd silent! exec ''.l:winnr.'wincmd w'
-	if get(g:, 'gutentags_plus_switch', 0) != 0
-		noautocmd silent! exec ''.s:quickfix_wid.'wincmd w'
 	endif
 endfunc
 
